@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VendorQ - Smart QR-Based Ordering System for Street Food Vendors</title>
+    <meta name="description" content="VendorQ is a QR-based ordering and payment platform for street food vendors in India. Scan, order, pay via UPI, and track your food - all from your phone.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            color: white;
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .logo span { color: #FFE0B2; }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 24px;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover { text-decoration: underline; }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            max-width: 650px;
+            margin: 0 auto 32px;
+            color: #ccc;
+        }
+
+        .hero-cta {
+            display: inline-block;
+            background: #FF6B35;
+            color: white;
+            padding: 14px 36px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.05rem;
+            transition: background 0.3s;
+        }
+
+        .hero-cta:hover { background: #e55a25; }
+
+        /* Business Info Banner */
+        .business-info {
+            background: #FFF3E0;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #FFE0B2;
+        }
+
+        .business-info p {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .business-info strong { color: #E65100; }
+
+        /* Sections */
+        section {
+            padding: 60px 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #1a1a2e;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #777;
+            margin-bottom: 48px;
+            font-size: 1.05rem;
+        }
+
+        /* How It Works */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 32px;
+        }
+
+        .step {
+            text-align: center;
+            padding: 24px;
+        }
+
+        .step-icon {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin: 0 auto 16px;
+            font-weight: 700;
+        }
+
+        .step h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: #1a1a2e;
+        }
+
+        .step p { color: #666; font-size: 0.95rem; }
+
+        /* Pricing / Plans */
+        .pricing-bg {
+            background: #f8f9fa;
+        }
+
+        .pricing-section {
+            padding: 60px 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 12px;
+            padding: 36px 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            border: 2px solid #eee;
+            transition: border-color 0.3s;
+        }
+
+        .pricing-card.popular {
+            border-color: #FF6B35;
+            position: relative;
+        }
+
+        .pricing-card.popular::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #FF6B35;
+            color: white;
+            padding: 4px 20px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: #1a1a2e;
+        }
+
+        .pricing-card .price {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #FF6B35;
+            margin: 16px 0;
+        }
+
+        .pricing-card .price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #999;
+        }
+
+        .pricing-card .currency {
+            font-size: 1.2rem;
+            vertical-align: super;
+        }
+
+        .pricing-card ul {
+            list-style: none;
+            margin: 24px 0;
+            text-align: left;
+        }
+
+        .pricing-card ul li {
+            padding: 8px 0;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .pricing-card ul li::before {
+            content: '\2713';
+            color: #4CAF50;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+
+        .pricing-btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .pricing-btn.primary {
+            background: #FF6B35;
+            color: white;
+        }
+
+        .pricing-btn.secondary {
+            background: white;
+            color: #FF6B35;
+            border: 2px solid #FF6B35;
+        }
+
+        /* Features */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 28px;
+        }
+
+        .feature-card {
+            padding: 28px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: #1a1a2e;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        /* Services Section */
+        .services-bg {
+            background: #fff;
+        }
+
+        .services-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .service-item {
+            padding: 24px;
+            border-radius: 12px;
+            background: #f8f9fa;
+            border-left: 4px solid #FF6B35;
+        }
+
+        .service-item h3 {
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+
+        .service-item p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        /* About / Business Details */
+        .about-section {
+            background: #1a1a2e;
+            color: white;
+            padding: 60px 20px;
+        }
+
+        .about-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .about-inner h2 {
+            font-size: 1.8rem;
+            margin-bottom: 16px;
+            color: #FF6B35;
+        }
+
+        .about-inner p {
+            color: #ccc;
+            line-height: 1.8;
+        }
+
+        .about-details { margin-top: 20px; }
+
+        .about-details dt {
+            font-weight: 600;
+            color: #FF6B35;
+            margin-top: 12px;
+        }
+
+        .about-details dd {
+            color: #bbb;
+            margin-left: 0;
+        }
+
+        /* Contact */
+        .contact-section {
+            padding: 60px 20px;
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .contact-section p { color: #666; margin-bottom: 8px; }
+
+        .contact-email {
+            color: #FF6B35;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #111;
+            color: #888;
+            padding: 32px 20px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        footer .footer-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        footer a { color: #FF6B35; text-decoration: none; }
+
+        .footer-links {
+            margin-top: 12px;
+        }
+
+        .footer-links a {
+            margin: 0 12px;
+            color: #aaa;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.8rem; }
+            .hero p { font-size: 1rem; }
+            nav { display: none; }
+            .pricing-card { margin: 0 auto; max-width: 350px; }
+        }
+
+        /* Terms & Refund inline sections */
+        .policy-section {
+            padding: 40px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .policy-section h2 {
+            color: #1a1a2e;
+            margin-bottom: 16px;
+        }
+
+        .policy-section p, .policy-section li {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .policy-section ul {
+            margin-left: 20px;
+            margin-bottom: 16px;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+    <div class="header-inner">
+        <div class="logo">Vendor<span>Q</span></div>
+        <nav>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#services">Services</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#features">Features</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Hero Section -->
+<div class="hero">
+    <h1>Smart Ordering for Street Food Vendors</h1>
+    <p>VendorQ is a QR-based ordering and UPI payment platform that helps street food vendors go digital. Customers scan, order, pay, and track - all from their phone.</p>
+    <a href="#pricing" class="hero-cta">Get Started Today</a>
+</div>
+
+<!-- Business Info Banner -->
+<div class="business-info">
+    <p>A product by <strong>Flux Solutions</strong> | Registered Business: <strong>FLUX SOLUTIONS</strong> | Empowering India's street food vendors with digital ordering and UPI payments</p>
+</div>
+
+<!-- How It Works -->
+<section id="how-it-works">
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-subtitle">Simple 4-step process for your customers</p>
+    <div class="steps">
+        <div class="step">
+            <div class="step-icon">1</div>
+            <h3>Scan QR Code</h3>
+            <p>Customer scans the unique QR code at your stall using their phone camera.</p>
+        </div>
+        <div class="step">
+            <div class="step-icon">2</div>
+            <h3>Browse & Order</h3>
+            <p>View your menu with prices in INR, add items to cart, and place the order.</p>
+        </div>
+        <div class="step">
+            <div class="step-icon">3</div>
+            <h3>Pay via UPI</h3>
+            <p>Pay securely through PhonePe, Google Pay, Paytm, or any UPI app.</p>
+        </div>
+        <div class="step">
+            <div class="step-icon">4</div>
+            <h3>Track & Pickup</h3>
+            <p>Get a queue number, track order status in real-time, and pick up when ready.</p>
+        </div>
+    </div>
+</section>
+
+<hr class="divider">
+
+<!-- Services -->
+<section id="services" class="services-bg">
+    <h2 class="section-title">Our Services</h2>
+    <p class="section-subtitle">Everything a street food vendor needs to go digital</p>
+    <div class="services-list">
+        <div class="service-item">
+            <h3>QR-Based Digital Menu</h3>
+            <p>Get a unique QR code for your stall. Customers scan and instantly see your menu with item names, descriptions, and prices in INR. No app download needed.</p>
+        </div>
+        <div class="service-item">
+            <h3>Online Order Management</h3>
+            <p>Receive orders digitally on your vendor dashboard. Accept, prepare, and mark orders as ready - all from your phone or tablet. No more shouting order numbers.</p>
+        </div>
+        <div class="service-item">
+            <h3>UPI Payment Integration</h3>
+            <p>Accept payments via PhonePe, Google Pay, Paytm, and all UPI apps. Secure, instant, and directly to your bank account. No cash handling hassles.</p>
+        </div>
+        <div class="service-item">
+            <h3>Smart Queue System</h3>
+            <p>Automatic queue number assignment for every order. Customers know their position and get notified when food is ready. Reduces crowding at your stall.</p>
+        </div>
+        <div class="service-item">
+            <h3>Sales Reports & Analytics</h3>
+            <p>Track daily, weekly, and monthly sales. See which items sell the most, your peak hours, and total revenue. Export reports to CSV for your records.</p>
+        </div>
+        <div class="service-item">
+            <h3>Customer Notifications</h3>
+            <p>Customers receive real-time notifications when their order status changes. No more waiting in crowds - they come only when food is ready.</p>
+        </div>
+    </div>
+</section>
+
+<hr class="divider">
+
+<!-- Pricing -->
+<div id="pricing" class="pricing-bg">
+    <div class="pricing-section">
+        <h2 class="section-title">Simple, Transparent Pricing</h2>
+        <p class="section-subtitle">Choose a plan that fits your business. All prices in INR.</p>
+        <div class="pricing-cards">
+            <div class="pricing-card">
+                <h3>Starter</h3>
+                <p style="color:#999;">For new vendors getting started</p>
+                <div class="price"><span class="currency">&#8377;</span>0 <span>/ month</span></div>
+                <ul>
+                    <li>Digital QR Menu</li>
+                    <li>Up to 15 menu items</li>
+                    <li>UPI payment links</li>
+                    <li>Basic order management</li>
+                    <li>Queue number system</li>
+                    <li>Email support</li>
+                </ul>
+                <a href="#contact" class="pricing-btn secondary">Start Free</a>
+            </div>
+            <div class="pricing-card popular">
+                <h3>Growth</h3>
+                <p style="color:#999;">For busy vendors scaling up</p>
+                <div class="price"><span class="currency">&#8377;</span>299 <span>/ month</span></div>
+                <ul>
+                    <li>Everything in Starter</li>
+                    <li>Unlimited menu items</li>
+                    <li>Sales analytics dashboard</li>
+                    <li>Customer notifications</li>
+                    <li>Daily revenue reports</li>
+                    <li>Priority support</li>
+                </ul>
+                <a href="#contact" class="pricing-btn primary">Get Started</a>
+            </div>
+            <div class="pricing-card">
+                <h3>Pro</h3>
+                <p style="color:#999;">For multi-stall operations</p>
+                <div class="price"><span class="currency">&#8377;</span>799 <span>/ month</span></div>
+                <ul>
+                    <li>Everything in Growth</li>
+                    <li>Multiple stall management</li>
+                    <li>Advanced analytics & CSV export</li>
+                    <li>WhatsApp notifications</li>
+                    <li>Dedicated account manager</li>
+                    <li>Custom branding on menu</li>
+                </ul>
+                <a href="#contact" class="pricing-btn secondary">Contact Us</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="divider">
+
+<!-- Features -->
+<section id="features">
+    <h2 class="section-title">Why Choose VendorQ?</h2>
+    <p class="section-subtitle">Built specifically for India's street food ecosystem</p>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">&#128241;</div>
+            <h3>Mobile-First Design</h3>
+            <p>Designed for smartphones first. Works perfectly on any phone browser - no app download required for customers.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#9889;</div>
+            <h3>Lightning Fast</h3>
+            <p>Menu loads in under 2 seconds. Optimized for Indian mobile networks so your customers never wait.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#128176;</div>
+            <h3>All UPI Apps Supported</h3>
+            <p>PhonePe, Google Pay, Paytm, BHIM, and 100+ other UPI apps. Payment goes directly to your bank account.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#128202;</div>
+            <h3>Business Insights</h3>
+            <p>Know your best-selling items, peak hours, daily revenue, and customer patterns with detailed reports.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#128275;</div>
+            <h3>No Customer Login</h3>
+            <p>Zero friction for customers. No signup, no app, no login - just scan, order, and pay. Simple.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#127758;</div>
+            <h3>Multi-Language Ready</h3>
+            <p>Support for Hindi, Telugu, Tamil, and more regional languages coming soon. Serve customers in their language.</p>
+        </div>
+    </div>
+</section>
+
+<hr class="divider">
+
+<!-- About Section -->
+<div class="about-section" id="about">
+    <div class="about-inner">
+        <div>
+            <h2>About VendorQ</h2>
+            <p>VendorQ is a product of <strong>FLUX SOLUTIONS</strong>, a registered business dedicated to digitizing India's vibrant street food ecosystem. We believe every vendor - from a chai stall to a dosa cart - deserves access to modern ordering and payment technology.</p>
+            <p style="margin-top:16px;">Our platform eliminates the chaos of peak-hour ordering by providing a structured, digital workflow. Customers order from their phones, pay via UPI, and get notified when their food is ready. Vendors get a clean dashboard to manage everything.</p>
+        </div>
+        <div>
+            <h2>Business Details</h2>
+            <dl class="about-details">
+                <dt>Registered Business Name</dt>
+                <dd>FLUX SOLUTIONS</dd>
+                <dt>Product Name</dt>
+                <dd>VendorQ</dd>
+                <dt>Type of Business</dt>
+                <dd>Technology Platform / SaaS</dd>
+                <dt>Services</dt>
+                <dd>QR-based ordering, UPI payment integration, order management, analytics for food vendors</dd>
+                <dt>Currency</dt>
+                <dd>Indian Rupee (INR)</dd>
+                <dt>Support Email</dt>
+                <dd>androiprogrammers@gmail.com</dd>
+            </dl>
+        </div>
+    </div>
+</div>
+
+<!-- Contact -->
+<section class="contact-section" id="contact">
+    <h2 class="section-title">Get In Touch</h2>
+    <p style="margin-bottom:24px;">Ready to digitize your food stall? Have questions? Reach out to us.</p>
+    <p>Email: <a href="mailto:androiprogrammers@gmail.com" class="contact-email">androiprogrammers@gmail.com</a></p>
+    <p style="margin-top:8px;">Phone: <a href="tel:+918074251094" class="contact-email">+91 80742 51094</a></p>
+    <p style="margin-top:24px;color:#999;font-size:0.9rem;">We typically respond within 24 hours.</p>
+</section>
+
+<hr class="divider">
+
+<!-- Terms & Conditions -->
+<div class="policy-section" id="terms">
+    <h2>Terms & Conditions</h2>
+    <p>By using VendorQ's services, you agree to the following terms:</p>
+    <ul>
+        <li>VendorQ provides a digital ordering and payment facilitation platform for food vendors.</li>
+        <li>Vendors are responsible for the quality, hygiene, and delivery of food items listed on their menu.</li>
+        <li>All payments are processed through UPI and are subject to the respective UPI app's terms and conditions.</li>
+        <li>VendorQ does not hold or process customer payments - all UPI payments go directly to the vendor's bank account.</li>
+        <li>Users must provide accurate business and contact information during registration.</li>
+        <li>VendorQ reserves the right to suspend accounts that violate our terms or engage in fraudulent activity.</li>
+        <li>Subscription fees are billed monthly and are non-refundable for the current billing period unless stated otherwise in our refund policy.</li>
+    </ul>
+</div>
+
+<hr class="divider">
+
+<!-- Refund & Cancellation Policy -->
+<div class="policy-section" id="refund">
+    <h2>Refund & Cancellation Policy</h2>
+    <p><strong>Subscription Refunds:</strong></p>
+    <ul>
+        <li>You may cancel your subscription at any time. Cancellation takes effect at the end of the current billing cycle.</li>
+        <li>Refunds for subscription fees are available within 7 days of payment if you have not used the service during that period.</li>
+        <li>No refunds will be issued for partially used billing periods.</li>
+    </ul>
+    <p><strong>Order Payment Refunds:</strong></p>
+    <ul>
+        <li>Since all UPI payments are made directly from customer to vendor, VendorQ does not process refunds for food orders.</li>
+        <li>Any disputes regarding food orders or payments must be resolved directly between the customer and the vendor.</li>
+        <li>For payment failures or technical issues, please contact our support team at androiprogrammers@gmail.com.</li>
+    </ul>
+</div>
+
+<hr class="divider">
+
+<!-- Privacy Policy -->
+<div class="policy-section" id="privacy">
+    <h2>Privacy Policy</h2>
+    <p>VendorQ is committed to protecting your privacy. Here is how we handle your data:</p>
+    <ul>
+        <li><strong>Data Collected:</strong> We collect vendor business details (name, phone, UPI ID) and customer order details (name, phone number, order items).</li>
+        <li><strong>Usage:</strong> Data is used solely for order processing, notifications, and generating sales reports for vendors.</li>
+        <li><strong>Storage:</strong> All data is stored securely and is not shared with third parties except as required for service operation.</li>
+        <li><strong>Customer Data:</strong> Customer phone numbers and names are collected only for order tracking and notifications. We do not use this data for marketing.</li>
+        <li><strong>UPI Information:</strong> VendorQ does not store any UPI PINs, passwords, or bank account details. Payments are processed entirely through UPI apps.</li>
+        <li><strong>Data Deletion:</strong> Vendors can request deletion of their account and associated data by contacting androiprogrammers@gmail.com.</li>
+    </ul>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-inner">
+        <p>&copy; 2026 FLUX SOLUTIONS. All rights reserved. | VendorQ is a product of Flux Solutions.</p>
+        <div class="footer-links">
+            <a href="#terms">Terms & Conditions</a>
+            <a href="#refund">Refund Policy</a>
+            <a href="#privacy">Privacy Policy</a>
+            <a href="#contact">Contact Us</a>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
